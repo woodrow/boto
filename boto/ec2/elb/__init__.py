@@ -459,6 +459,29 @@ class ELBConnection(AWSQueryConnection):
         return self.get_object('DescribeLoadBalancerAttributes',
                                params, LbAttributes)
 
+    def get_lb_policies(self, load_balancer_name=None, policy_names=None):
+        """Gets the Policies of a Load Balancer
+
+        :type load_balancer_name: string
+        :param load_balancer_name: The name of the Load Balancer
+
+        :type policy_names: List of strings
+        :param policy_names: An optional list of names of policies you wish to
+            describe
+
+        :rtype: boto.ec2.elb.policy.PolicyDescription
+        :return: The policy description object of the ELB.
+        """
+        from boto.ec2.elb.policies import PolicyDescription
+        params = {}
+        if load_balancer_name:
+            params['LoadBalancerName'] = load_balancer_name
+        if policy_names:
+            self.build_list_params(params, policy_names,
+                    'PolicyNames.member.%d')
+        return self.get_list('DescribeLoadBalancerPolicies',
+                               params, [('member', PolicyDescription)])
+
     def get_lb_attribute(self, load_balancer_name, attribute):
         """Gets an attribute of a Load Balancer
 

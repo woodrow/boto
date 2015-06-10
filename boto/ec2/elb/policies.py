@@ -22,6 +22,49 @@
 from boto.resultset import ResultSet
 
 
+class PolicyDescription(object):
+    def __init__(self, connection=None):
+        self.connection = connection
+        self.policy_name = None
+        self.policy_type_name= None
+        self.policy_attribute_descriptions = None
+
+    def __repr__(self):
+        return 'PolicyDescription(%s, %s)' % (self.policy_name,
+                                                self.policy_type_name)
+
+    def startElement(self, name, attrs, connection):
+        if name == 'PolicyAttributeDescriptions':
+            rs = ResultSet([('member', PolicyAttributeDescription)])
+            self.policy_attribute_descriptions = rs
+            return rs
+
+    def endElement(self, name, value, connection):
+        if name == 'PolicyTypeName':
+            self.policy_type_name = value
+        elif name == 'PolicyName':
+            self.policy_name = value
+
+
+class PolicyAttributeDescription(object):
+    def __init__(self, connection=None):
+        self.attribute_name = None
+        self.attribute_value = None
+
+    def __repr__(self):
+        return 'PolicyAttributeDescription(%s, %s)' % (self.attribute_name,
+                                                        self.attribute_value)
+
+    def startElement(self, name, attrs, connection):
+        pass
+
+    def endElement(self, name, value, connection):
+        if name == 'AttributeValue':
+            self.attribute_value = value
+        elif name == 'AttributeName':
+            self.attribute_name = value
+
+
 class AppCookieStickinessPolicy(object):
     def __init__(self, connection=None):
         self.cookie_name = None
